@@ -10,30 +10,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/audio"
-	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 )
 
-const sampleRate = 104100
-
-func playSound(g *Game) {
-	f, err := os.Open(g.soundFile)
-	if err != nil {
-		return
-	}
-
-	stream, err := mp3.DecodeWithoutResampling(f)
-	if err != nil {
-		return
-	}
-
-	player, err := g.audioContext.NewPlayer(stream)
-	if err != nil {
-		return
-	}
-
-	player.Play()
-}
-
+const sampleRate = 48000 //sample rate may or may not crash program if changed
+												 //on a per distro & soundsystem basis
 
 type Game struct {
 	data []int
@@ -41,16 +21,17 @@ type Game struct {
 	sorted bool
 
 	fillIndex int
-
-	lastSwap int
+	lastSwap  int
 
 	audioContext *audio.Context
+	soundPlayer  *audio.Player
 	soundFile    string
 }
 
 
+
 var (	
-	muted = bool(true)
+	muted = bool(false)
 	sortSelected = bool(false)
 	gameSpeed = int(15)
 	visualizerBar *ebiten.Image
@@ -78,17 +59,20 @@ func init() {
 }
 
 func NewGame() *Game {
-  ctx := audio.NewContext(sampleRate)
-
-
-	return &Game {
-		audioContext: ctx,
-		soundFile:    "assets/boop.mp3",
-		lastSwap:     -1,
+	return &Game{
+		soundFile: "assets/boop.mp3",
+		lastSwap:  -1,
 	}
 }
 
+
 func (g *Game) Update() error { //game logic
+	
+	if g.audioContext == nil {
+		g.audioContext = audio.NewContext(sampleRate)
+		g.initSound()
+	}
+
 
 	if !sortSelected {
 		fmt.Println ("WARNING! LOWER VOLUME!")
@@ -99,7 +83,7 @@ func (g *Game) Update() error { //game logic
 		time.Sleep(1 * time.Second)
 		fmt.Println ("program will unlock in 1...")
 		time.Sleep(1 * time.Second)
-		playSound(g)
+		g.playSound()
 
 		fmt.Println ("up key will mute, down key will unmute. muting may drastically increase performence with higher tps")
 		fmt.Println ("please select sorting algorithm:")
@@ -148,7 +132,7 @@ func (g *Game) Update() error { //game logic
 			g.lastSwap = g.j + 1 // highlight the value that moved
 
 			if !muted {
-				playSound(g)
+				g.playSound()
 			}
 		}
 		g.j++ // Advance inner index
@@ -174,7 +158,7 @@ func (g *Game) Update() error { //game logic
 			g.lastSwap = g.j - 1
 			g.j-- // move left
 			if !muted {
-				playSound(g)
+				g.playSound()
 			}
 			return nil
 		}
