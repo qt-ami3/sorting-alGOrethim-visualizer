@@ -15,10 +15,3 @@ go mod tidy
 
 go run .
 ```
-
-### change log
-
-added insert sort & sort selection
-added mute options
-added hearing protection
-added green sort bar
