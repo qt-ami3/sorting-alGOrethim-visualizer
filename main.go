@@ -140,7 +140,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// DOUBLE SORT - 'd'
 	if sortSelection == 'd' {
 		if g.data[g.j] > g.data[g.j+1] { //one comparison per tick
     	g.data[g.j], g.data[g.j+1] = g.data[g.j+1], g.data[g.j]	
@@ -193,7 +192,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// INSERTION SORT - 'i'
 	if sortSelection == 'i' {
 		// Initialize insertion sort
 		if g.i == 0 {
@@ -225,7 +223,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// SELECTION SORT - 's'
 	if sortSelection == 's' {
 		// If done
 		if g.i >= len(g.data)-1 {
@@ -234,16 +231,11 @@ func (g *Game) Update() error { //game logic
 			return nil
 		}
 		
-		// Initialize min index for this pass
 		if g.j == g.i {
-			// Store min index in a custom field or reuse lastSwap temporarily
-			// We'll track it via j's behavior
 		}
 		
-		// One comparison per tick - find minimum
 		if g.j < len(g.data) {
 			if g.data[g.j] < g.data[g.i] {
-				// Found new minimum, swap immediately for visualization
 				g.data[g.i], g.data[g.j] = g.data[g.j], g.data[g.i]
 				g.lastSwap = g.i
 				if !muted {
@@ -260,7 +252,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// COCKTAIL SORT (bidirectional bubble) - 'c'
 	if sortSelection == 'c' {
 		// Initialize
 		if g.i == 0 && g.j == 0 {
@@ -322,7 +313,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// GNOME SORT - 'g'
 	if sortSelection == 'g' {
 		// Initialize
 		if g.i == 0 {
@@ -352,7 +342,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// ODD-EVEN SORT - 'o'
 	if sortSelection == 'o' {
 		// Initialize
 		if g.i == 0 && g.j == 0 {
@@ -368,7 +357,6 @@ func (g *Game) Update() error { //game logic
 		
 		// One comparison per tick
 		if g.j < len(g.data)-1 {
-			// Only compare if we're at the right position for this phase
 			if g.j >= startPos && (g.j-startPos)%2 == 0 {
 				if g.data[g.j] > g.data[g.j+1] {
 					g.data[g.j], g.data[g.j+1] = g.data[g.j+1], g.data[g.j]
@@ -383,7 +371,7 @@ func (g *Game) Update() error { //game logic
 			return nil
 		}
 		
-		// End of phase - need two clean passes to be done
+		// End of phase need two clean passes to be done
 		if !g.swapped {
 			g.i++ // Count clean passes
 			if g.i >= 2 {
@@ -401,7 +389,6 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// COMB SORT - 'C' (uppercase)
 	if sortSelection == 'C' {
 		// Initialize gap
 		if g.gap == 0 {
@@ -443,10 +430,7 @@ func (g *Game) Update() error { //game logic
 		return nil
 	}
 
-	// BOGO SORT - 'B' (uppercase)
 	if sortSelection == 'B' {
-		// Only do full sorted check once per complete shuffle cycle
-		// Use g.i to track if we need to check
 		if g.i == 0 {
 			// Check if sorted using pointers
 			isSorted := true
@@ -467,16 +451,13 @@ func (g *Game) Update() error { //game logic
 				return nil
 			}
 			
-			// Start new shuffle cycle
-			g.i = len(g.data) / 2 // Do half-array worth of swaps before checking again
+			g.i = len(g.data) / 2
 		}
 		
-		// One shuffle per tick - swap two random elements using pointers
 		idx1 := randInt(0, len(g.data)-1)
 		idx2 := randInt(0, len(g.data)-1)
 		
 		if idx1 != idx2 {
-			// Pointer-based swap
 			dataPtr := &g.data[0]
 			ptr1 := (*int)(unsafe.Pointer(uintptr(unsafe.Pointer(dataPtr)) + uintptr(idx1)*unsafe.Sizeof(int(0))))
 			ptr2 := (*int)(unsafe.Pointer(uintptr(unsafe.Pointer(dataPtr)) + uintptr(idx2)*unsafe.Sizeof(int(0))))

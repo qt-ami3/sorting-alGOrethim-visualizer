@@ -4,6 +4,11 @@
 
 Instructions are for debian/ubuntu based distrobutions, instructions for other distrobutions can be found on ebitengine website.
 
+DO NOT unmute unless you aim to optimize or otherwise run g.playSound() on its own thread(s). This works easily with go g.playSound() but uses a considerable amount of memory and, statistically, is practically guarenteed to crash whatever system your using before it completes the sort.
+[^1]:
+    it also breaks itself after enough goroutines are started.
+[^1]
+
 ```
 sudo apt install gcc
 
