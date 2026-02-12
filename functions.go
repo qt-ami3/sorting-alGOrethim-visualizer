@@ -4,6 +4,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"os"
 	"log"
+	"bufio"
+	"strings"
+	"strconv"
 )
 
 func randInt(min, max int) int {
@@ -44,4 +47,27 @@ func (g *Game) playSound() {
 
 	g.soundPlayer.Rewind()
 	g.soundPlayer.Play()
+}
+func GetSelfRAM() float64 {
+	
+	file, err := os.Open("/proc/self/status")
+	
+	if err != nil {
+		return -1
+	}
+	
+	defer file.Close()
+	
+	scanner := bufio.NewScanner(file)
+	
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if strings.HasPrefix(line, "VmRSS:") {
+			fields := strings.Fields(line)
+			kb, _ := strconv.Atoi(fields[1]) // value in KB
+			return float64(kb) / 1024        // return MB
+		}
+	}
+	return -1
 }
